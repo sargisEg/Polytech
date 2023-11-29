@@ -1,4 +1,4 @@
-package main.java.org.polytech.first;
+package main.java.org.polytech.java.first;
 
 public class RomanNumberConverterTest {
 
