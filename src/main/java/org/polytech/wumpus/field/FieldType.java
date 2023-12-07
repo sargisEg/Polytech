@@ -1,7 +1,7 @@
 package main.java.org.polytech.wumpus.field;
 
 public enum FieldType {
-    DEFAULT("*") {
+    DEFAULT("[   ]") {
         @Override
         public FieldType setWumpus() {
             return FieldType.WUMPUS;
@@ -27,7 +27,7 @@ public enum FieldType {
             return FieldType.GOLD;
         }
     },
-    WUMPUS("G") { //Գագո
+    WUMPUS("[< >]") { //Գագո
         @Override
         public FieldType setWumpus() {
             throw new IllegalStateException();
@@ -53,7 +53,7 @@ public enum FieldType {
             throw new IllegalStateException();
         }
     },
-    STENCH("!") { //Հոտ
+    STENCH("[! !]") { //Հոտ
         @Override
         public FieldType setWumpus() {
             return FieldType.WUMPUS;
@@ -79,7 +79,7 @@ public enum FieldType {
             return FieldType.STENCH_GOLD;
         }
     },
-    PIT("O") { //Փոս
+    PIT("[( )]") { //Փոս
 
         @Override
         public FieldType setWumpus() {
@@ -106,7 +106,7 @@ public enum FieldType {
             throw new IllegalStateException();
         }
     },
-    BREEZE("~") { //Քամի
+    BREEZE("[~ ~]") { //Քամի
 
         @Override
         public FieldType setWumpus() {
@@ -133,7 +133,7 @@ public enum FieldType {
             return FieldType.BREEZE_GOLD;
         }
     },
-    GOLD("$") { //Ոսկի
+    GOLD("[$ $]") { //Ոսկի
 
         @Override
         public FieldType setWumpus() {
@@ -160,7 +160,7 @@ public enum FieldType {
             return FieldType.GOLD;
         }
     },
-    STENCH_BREEZE("!~") {
+    STENCH_BREEZE("[! ~]") {
         @Override
         public FieldType setWumpus() {
             return FieldType.WUMPUS;
@@ -186,7 +186,7 @@ public enum FieldType {
             return FieldType.STENCH_BREEZE_GOLD;
         }
     },
-    STENCH_BREEZE_GOLD("!~$") {
+    STENCH_BREEZE_GOLD("[!~$]") {
         @Override
         public FieldType setWumpus() {
             throw new IllegalStateException();
@@ -212,7 +212,7 @@ public enum FieldType {
             return FieldType.STENCH_BREEZE_GOLD;
         }
     },
-    BREEZE_GOLD("~$") {
+    BREEZE_GOLD("[~$]") {
         @Override
         public FieldType setWumpus() {
             throw new IllegalStateException();
@@ -238,7 +238,7 @@ public enum FieldType {
             return FieldType.BREEZE_GOLD;
         }
     },
-    STENCH_GOLD("!$") {
+    STENCH_GOLD("[!$]") {
         @Override
         public FieldType setWumpus() {
             throw new IllegalStateException();
