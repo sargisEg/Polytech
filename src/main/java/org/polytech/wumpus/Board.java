@@ -31,17 +31,23 @@ public class Board {
             }
         }
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        //Only this method is written by chatGPT :)
+        setNeighbors();
+
+    }
+
+    private void setNeighbors() {
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
                 Field currentField = board[i][j];
 
                 // Connect to the right neighbor (if it exists)
-                if (j < size - 1) {
+                if (j < boardSize - 1) {
                     currentField.setNextField(board[i][j + 1]);
                 }
 
                 // Connect to the bottom neighbor (if it exists)
-                if (i < size - 1) {
+                if (i < boardSize - 1) {
                     currentField.setNextField(board[i + 1][j]);
                 }
 
@@ -89,34 +95,57 @@ public class Board {
     }
 
     private void checkNeighborFields(Field field, LinkedList<Integer> path) {
-        path.addLast(field.getNumber());
         field.setChecked(true);
-        if (isSolved) {
-            path.removeLast();
+        //If board not solved yet add current field number to the path
+        if (!isSolved)
+            path.addLast(field.getNumber());
+        else
             return;
-        }
-        if (field.getType() == FieldType.GOLD ||
-            field.getType() == FieldType.BREEZE_GOLD ||
-            field.getType() == FieldType.STENCH_GOLD ||
-            field.getType() == FieldType.STENCH_BREEZE_GOLD) {
+
+        //If current field contains gold mark board as solved
+        if (isFieldGold(field)) {
             isSolved = true;
             return;
         }
 
-        if (field.getType() == FieldType.DEFAULT) {
-            field.getNextFields().forEach(neighbor -> neighbor.setStatus(FieldStatus.SAFE));
-        }
+        //Find type of the current field
+        checkFieldForDefault(field);
+        checkFieldForBreeze(field);
+        checkFieldForStench(field);
+        checkFieldForStenchBreeze(field);
 
-        if (field.getType() == FieldType.BREEZE) {
+        //If board not solved yet check neighbors of current field
+        if (!isSolved) {
             field.getNextFields().forEach(neighbor -> {
-                if (neighbor.getStatus() == FieldStatus.DANGER_WUMPUS) {
-                    neighbor.setStatus(FieldStatus.SAFE);
-                } else if (neighbor.getStatus() == null) {
-                    neighbor.setStatus(FieldStatus.DANGER_PIT);
+                if (!neighbor.isChecked() && neighbor.getStatus() == FieldStatus.SAFE) {
+                    checkNeighborFields(neighbor, path);
                 }
             });
         }
 
+        //If after neighbors checking board still not solved remove current field number from path
+        if (!isSolved)
+            path.removeLast();
+    }
+
+    private boolean isFieldGold(Field field) {
+        return field.getType() == FieldType.GOLD ||
+                field.getType() == FieldType.BREEZE_GOLD ||
+                field.getType() == FieldType.STENCH_GOLD ||
+                field.getType() == FieldType.STENCH_BREEZE_GOLD;
+    }
+
+    private void checkFieldForStenchBreeze(Field field) {
+        if (field.getType() == FieldType.STENCH_BREEZE) {
+            field.getNextFields().forEach(neighbor -> {
+                if (neighbor.getStatus() == null) {
+                    neighbor.setStatus(FieldStatus.DANGER);
+                }
+            });
+        }
+    }
+
+    private void checkFieldForStench(Field field) {
         if (field.getType() == FieldType.STENCH) {
             field.getNextFields().forEach(neighbor -> {
                 if (neighbor.getStatus() == FieldStatus.DANGER_PIT) {
@@ -126,22 +155,23 @@ public class Board {
                 }
             });
         }
+    }
 
-        if (field.getType() == FieldType.STENCH_BREEZE) {
+    private void checkFieldForBreeze(Field field) {
+        if (field.getType() == FieldType.BREEZE) {
             field.getNextFields().forEach(neighbor -> {
-                if (neighbor.getStatus() == null) {
-                    neighbor.setStatus(FieldStatus.DANGER);
+                if (neighbor.getStatus() == FieldStatus.DANGER_WUMPUS) {
+                    neighbor.setStatus(FieldStatus.SAFE);
+                } else if (neighbor.getStatus() == null) {
+                    neighbor.setStatus(FieldStatus.DANGER_PIT);
                 }
             });
         }
+    }
 
-        if (!isSolved) {
-            field.getNextFields().forEach(neighbor -> {
-                if (!neighbor.isChecked() && neighbor.getStatus() == FieldStatus.SAFE)
-                    checkNeighborFields(neighbor, path);
-            });
+    private void checkFieldForDefault(Field field) {
+        if (field.getType() == FieldType.DEFAULT) {
+            field.getNextFields().forEach(neighbor -> neighbor.setStatus(FieldStatus.SAFE));
         }
-        if (!isSolved)
-            path.removeLast();
     }
 }
